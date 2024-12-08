@@ -244,6 +244,8 @@
       document.getElementById('gameOverModal').style.display = 'none';
       document.getElementById('continueLevel').textContent = level;
       document.querySelector('.continue-controls').style.display = 'block';
+      // Habilita o botão de iniciar jogo
+      document.getElementById('startBtn').disabled = false;
     });
 
     // Continua o jogo quando o botão "Continuar" é clicado
@@ -289,9 +291,12 @@
 
     // Inicia o jogo quando o botão é clicado
     document.getElementById('startBtn').addEventListener('click', function() {
-      isGameStarted = true;
+      // Desabilita o botão "Iniciar Jogo" para evitar múltiplos cliques
       document.getElementById('startBtn').disabled = true;
+      // Resetar o estado do jogo
       init();
+      document.querySelector('.continue-controls').style.display = 'none';  // Esconde o botão "Continuar"
+      document.getElementById('gameOverModal').style.display = 'none'; // Esconde o modal de game over
     });
 
     // Aumenta o nível quando o botão é clicado
