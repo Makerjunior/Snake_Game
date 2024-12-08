@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="jogo.png" type="image/x-icon">
+  <meta property="og:title" content="Snake Game" />
+  <meta property="og:description" content="Mente Maker." />
+  <meta property="og:image" content="https://Makerjunior.github.io/Snake_Game.github.io/jogo.png" />
+  <meta property="og:url" content="https://github.com/Makerjunior/Snake_Game.github.io" />
+
+  <style>
+    canvas {
+      background-color: #222;
+      border: 2px solid #fff;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .modal-content {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #fff;
+    }
+
+    .controls button {
+      font-size: 18px;
+    }
+
+    .continue-controls {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+
+  <h1 class="text-4xl mb-4">Jogo da Cobrinha</h1>
+  
+  <!-- Flex container for the game and text -->
+  <div class="flex flex-col md:flex-row items-start justify-center w-full max-w-6xl">
+    
+    <!-- Game Canvas Container -->
+    <div class="flex justify-center mb-4 md:mr-8">
+      <canvas id="gameCanvas" width="400" height="400" class="border-2 border-white"></canvas>
+    </div>
+
+    <!-- Text Content -->
+    <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
+      <p id="score" class="text-xl">Pontuação: 0</p>
+      <p id="level" class="text-xl">Nível: 1</p>
+
+      <div class="controls mt-4">
+        <button id="startBtn" class="bg-green-500 text-lg px-4 py-2 rounded hover:bg-green-700 transition">Iniciar Jogo</button>
+        <button id="levelBtn" class="bg-blue-500 text-lg px-4 py-2 rounded hover:bg-blue-700 transition">Aumentar Nível</button>
+      </div>
+
+      <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+          <h2 class="text-2xl mb-2">Fim de Jogo!</h2>
+          <p>Sua Pontuação Final: <span id="finalScore">0</span></p>
+          <p>Seu Nível Final: <span id="finalLevel">1</span></p>
+          <button id="closeModalBtn" class="bg-green-500 text-lg px-4 py-2 rounded hover:bg-green-700 transition">Fechar</button>
+        </div>
+      </div>
+
+      <!-- Modal para continuar o jogo -->
+      <div class="continue-controls">
+        <p class="text-xl">Nível Atual: <span id="continueLevel"></span></p>
+        <button id="continueBtn" class="bg-green-500 text-lg px-4 py-2 rounded hover:bg-green-700 transition">Continuar Jogando</button>
+      </div>
+
+      <div class="mt-8 text-center">
+        <h2 class="text-xl font-bold text-white">Como Jogar</h2>
+        <p>Use as setas do teclado para mover a cobrinha. O objetivo é comer a maçã que aparece na tela para aumentar a pontuação e o nível. O jogo termina quando a cobrinha colide com as paredes ou consigo mesma.</p>
+      </div>
+
+      <div class="mt-8">
+        <h2 class="text-xl font-bold text-white">Cursos Disponíveis:</h2>
+        <ul class="text-white">
+          <li>🔥 <strong>Curso de Banco de Dados</strong>  
+            <a href="https://www.youtube.com/watch?v=svE5Cp_q9Zk&list=PLpo2vYALH9e5ps7gHbCjmT35uAQIwbdl7&index=18" class="text-blue-400">Acessar curso</a>
+          </li>
+          <li>🔥 <strong>Curso de Python</strong>  
+            <a href="https://www.youtube.com/watch?v=LJsHlPTEChY&list=PLpo2vYALH9e5JqNQmABa49nqTIvDqGzBP&index=27" class="text-blue-400">Acessar curso</a>
+          </li>
+          <li>🔥 <strong>Curso de JavaScript</strong>  
+            <a href="https://www.youtube.com/watch?v=ianmOsVCeCY&list=PLpo2vYALH9e58UzWhvozuMAaK7vVS4_lP&index=25" class="text-blue-400">Acessar curso</a>
+          </li>
+          <li>🔥 <strong>Curso de TypeScript</strong>  
+            <a href="https://www.youtube.com/watch?v=zTMsSsCXxUw&list=PLpo2vYALH9e5eYXAAp-HaTsKditRq2E-o&index=6" class="text-blue-400">Acessar curso</a>
+          </li>
+          <li>🔥 <strong>Curso de Arduino</strong>  
+            <a href="https://www.youtube.com/watch?v=aqyERPLVz_0&list=PLpo2vYALH9e78eG0CZuw3Co644KQID19p&index=5" class="text-blue-400">Acessar curso</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scale = 20; // Tamanho de cada bloco
+    const rows = canvas.height / scale;
+    const columns = canvas.width / scale;
+
+    let snake;
+    let apple;
+    let score = 0;
+    let level = 1;
+    let speed = 100;
+    let gameOver = false;
+    let gameInterval;
+    let isGameStarted = false;
+
+    // Define a cobrinha
+    function Snake() {
+      this.body = [{ x: 10, y: 10 }];
+      this.direction = 'RIGHT';
+      this.newDirection = 'RIGHT';
+
+      this.move = function() {
+        let head = { ...this.body[0] };
+
+        if (this.direction === 'RIGHT') head.x++;
+        if (this.direction === 'LEFT') head.x--;
+        if (this.direction === 'UP') head.y--;
+        if (this.direction === 'DOWN') head.y++;
+
+        this.body.unshift(head);
+
+        if (this.body[0].x === apple.x && this.body[0].y === apple.y) {
+          score++;
+          document.getElementById('score').textContent = 'Pontuação: ' + score;
+          apple = randomPosition();
+
+          if (score % 20 === 0) {
+            level++;
+            document.getElementById('level').textContent = 'Nível: ' + level;
+            speed -= 10; // Aumenta a velocidade do jogo
+            clearInterval(gameInterval);
+            gameInterval = setInterval(update, speed);
+          }
+        } else {
+          this.body.pop();
+        }
+      };
+
+      this.changeDirection = function() {
+        if (this.newDirection === 'RIGHT' && this.direction !== 'LEFT') {
+          this.direction = 'RIGHT';
+        }
+        if (this.newDirection === 'LEFT' && this.direction !== 'RIGHT') {
+          this.direction = 'LEFT';
+        }
+        if (this.newDirection === 'UP' && this.direction !== 'DOWN') {
+          this.direction = 'UP';
+        }
+        if (this.newDirection === 'DOWN' && this.direction !== 'UP') {
+          this.direction = 'DOWN';
+        }
+      };
+
+      this.draw = function() {
+        ctx.fillStyle = '#00FF00';
+        for (let i = 0; i < this.body.length; i++) {
+          ctx.fillRect(this.body[i].x * scale, this.body[i].y * scale, scale, scale);
+        }
+      };
+
+      this.checkCollision = function() {
+        const head = this.body[0];
+
+        // Verifica se a cobrinha colidiu com as paredes
+        if (head.x < 0 || head.x >= columns || head.y < 0 || head.y >= rows) {
+          gameOver = true;
+        }
+
+        // Verifica se a cobrinha colidiu consigo mesma
+        for (let i = 1; i < this.body.length; i++) {
+          if (head.x === this.body[i].x && head.y === this.body[i].y) {
+            gameOver = true;
+          }
+        }
+      };
+    }
+
+    // Gera uma posição aleatória para a maçã
+    function randomPosition() {
+      return {
+        x: Math.floor(Math.random() * columns),
+        y: Math.floor(Math.random() * rows)
+      };
+    }
+
+    // Desenha a maçã
+    function drawApple() {
+      ctx.fillStyle = '#FF0000';
+      ctx.fillRect(apple.x * scale, apple.y * scale, scale, scale);
+    }
+
+    // Atualiza o jogo
+    function update() {
+      if (gameOver) {
+        showGameOverModal();
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        snake.move();
+        snake.changeDirection();
+        snake.draw();
+        drawApple();
+        snake.checkCollision();
+      }
+    }
+
+    // Exibe o modal de Game Over
+    function showGameOverModal() {
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalLevel').textContent = level;
+      document.getElementById('gameOverModal').style.display = 'flex';
+      clearInterval(gameInterval);
+    }
+
+    // Fecha o modal de Game Over e exibe as opções de continuar
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+      document.getElementById('gameOverModal').style.display = 'none';
+      document.getElementById('continueLevel').textContent = level;
+      document.querySelector('.continue-controls').style.display = 'block';
+    });
+
+    // Continua o jogo quando o botão "Continuar" é clicado
+    document.getElementById('continueBtn').addEventListener('click', function() {
+      document.querySelector('.continue-controls').style.display = 'none';
+      gameOver = false;
+      snake = new Snake();
+      apple = randomPosition();
+      score = 0;
+      document.getElementById('score').textContent = 'Pontuação: ' + score;
+      document.getElementById('level').textContent = 'Nível: ' + level;
+      gameInterval = setInterval(update, speed);
+    });
+
+    // Controla a cobrinha com as setas do teclado
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowRight') {
+        snake.newDirection = 'RIGHT';
+      }
+      if (event.key === 'ArrowLeft') {
+        snake.newDirection = 'LEFT';
+      }
+      if (event.key === 'ArrowUp') {
+        snake.newDirection = 'UP';
+      }
+      if (event.key === 'ArrowDown') {
+        snake.newDirection = 'DOWN';
+      }
+    });
+
+    // Inicializa o jogo
+    function init() {
+      snake = new Snake();
+      apple = randomPosition();
+      score = 0;
+      document.getElementById('score').textContent = 'Pontuação: ' + score;
+      gameOver = false;
+      level = 1;
+      document.getElementById('level').textContent = 'Nível: ' + level;
+      speed = 100;
+      gameInterval = setInterval(update, speed);
+    }
+
+    // Inicia o jogo quando o botão é clicado
+    document.getElementById('startBtn').addEventListener('click', function() {
+      isGameStarted = true;
+      document.getElementById('startBtn').disabled = true;
+      init();
+    });
+
+    // Aumenta o nível quando o botão é clicado
+    document.getElementById('levelBtn').addEventListener('click', function() {
+      level++;
+      document.getElementById('level').textContent = 'Nível: ' + level;
+      if (level % 5 === 0) {
+        speed -= 10;
+        clearInterval(gameInterval);
+        gameInterval = setInterval(update, speed);
+      }
+    });
+
+  </script>
+</body>
+</html>
