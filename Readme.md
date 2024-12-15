@@ -1,7 +1,7 @@
 
 
 
-# **Jogo Snake**
+# **🐍Jogo Snake**
 
 ## **Descrição**
 O jogo **Snake** é uma recriação do clássico jogo onde o objetivo é controlar uma cobrinha que cresce à medida que ela consome maçãs. O jogo é dividido em níveis, e a cada 20 maçãs consumidas, o nível aumenta, tornando o jogo mais rápido. A partida termina quando a cobrinha colide com as paredes ou com seu próprio corpo.
@@ -32,12 +32,12 @@ O jogo **Snake** é uma recriação do clássico jogo onde o objetivo é control
 ## **Link para Jogar**
 Você pode jogar o jogo online diretamente clicando no link abaixo:
 
-[**Jogar Snake Game**](https://makerjunior.github.io/Snake_Game/)
+[**🎮Jogar Snake Game**](https://makerjunior.github.io/Snake_Game/)
 
 ## **Canal do YouTube**
 Para mais tutoriais e vídeos sobre desenvolvimento de jogos, acesse o canal **Mentemaker**:
 
-[**Mentemaker no YouTube**](https://www.youtube.com/@mentemaker)
+[**🎞️Mentemaker no YouTube**](https://www.youtube.com/@mentemaker)
 
 ## **Características do Jogo**
 - **Desafio Progressivo:** A velocidade do jogo aumenta conforme você coleta mais maçãs e avança de nível.
