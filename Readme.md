@@ -3,7 +3,7 @@
 
 # **🐍Jogo Snake**
 
-## **Descrição**
+## **📌Descrição**
 O jogo **Snake** é uma recriação do clássico jogo onde o objetivo é controlar uma cobrinha que cresce à medida que ela consome maçãs. O jogo é dividido em níveis, e a cada 20 maçãs consumidas, o nível aumenta, tornando o jogo mais rápido. A partida termina quando a cobrinha colide com as paredes ou com seu próprio corpo.
 
 ## **Objetivo**
